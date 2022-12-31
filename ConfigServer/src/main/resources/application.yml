@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: 8085
 
 
 spring:
@@ -16,31 +16,20 @@ spring:
 #      hibernate:
 #        dialect: org.hibernate.dialect.MySQL8Dialect
   application:
-    name: API-GATEWAY
-
+    name: CONFIG-SERVER
   cloud:
-    gateway:
-      routes:
-        - id: USER-SERVICE
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/users/**
+    config:
+      server:
+        git:
+          uri: https://github.com/RohitSharma175/microservice-config
+          clone-on-start: true
 
-        - id: HOTEL-SERVICE
-          uri: lb://HOTEL-SERVICE
-          predicates:
-            - Path=/hotels/**
 
-        - id: RATING-SERVICE
-          uri: lb://RATING-SERVICE
-          predicates:
-            - Path=/ratings/**
-
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defalutZone: http//localhost:8761/eureka
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:
+#      defalutZone: http//localhost:8761/eureka
