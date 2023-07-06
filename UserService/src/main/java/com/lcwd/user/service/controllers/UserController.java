@@ -4,6 +4,7 @@ import com.lcwd.user.service.entities.User;
 import com.lcwd.user.service.services.UserService;
 import com.lcwd.user.service.services.impl.UserServiceImpl;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +30,20 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(user1);
     }
 
+    int retrycount = 1;
     @GetMapping("/{userId}")
-    @CircuitBreaker(name = "ratingHotelBreaker",fallbackMethod = "ratingHotelFallback")
+//    @CircuitBreaker(name = "ratingHotelBreaker",fallbackMethod = "ratingHotelFallback")
+    @Retry(name = "ratingHotelService",fallbackMethod = "ratingHotelFallback")
     public ResponseEntity<User> getSingleUser(@PathVariable String userId)
     {
+        logger.info("Retry Count : "+retrycount);
+        retrycount++;
         User user = userService.getUser(userId);
         return ResponseEntity.ok(user);
     }
 
 //    creating fall back mathod for circuirbreaker
+
     public ResponseEntity<User> ratingHotelFallback(String userId, Exception ex)
     {
         logger.info("fallback is executed because service is down : "+ex.getMessage());
